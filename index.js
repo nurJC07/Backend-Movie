@@ -21,6 +21,9 @@ app.get('/', (req,res) => {
     res.send('<center><h1> Ini HomePage !</h1></center/>')
 })
 
+
+//========== Manage Movie ============
+
 app.get('/movielist', (req,res) => {
     var sql = `select * from movie`
     conn.query(sql, (err,results) => {
@@ -29,8 +32,6 @@ app.get('/movielist', (req,res) => {
     })
 
 })
-
-//========== Manage Movie ============
 
 app.post('/addmovie', (req,res) => {
     var newMovie = {
@@ -77,6 +78,14 @@ app.delete('/deletemovie/:id', (req,res)=> {
 
 //========== Manage Category ============
 
+app.get('/categorylist', (req,res) => {
+    var sql = `select * from categories`
+    conn.query(sql, (err,results) => {
+        if(err) throw err;
+        res.send(results);
+    })
+
+})
 app.post('/addcategory', (req,res) => {
     var newCat = {
         nama: req.body.nama, 
@@ -118,6 +127,20 @@ app.delete('/deletecategory/:id', (req,res)=> {
 
 //========== Connect Movies and Category ============
 
+
+app.get('/connectionlist', (req,res) => {
+    var sql = `select m.nama as namaMovie, c.nama as namaCategory
+    from movie m 
+    join movcat mc
+    on m.id = mc.idmovie
+    join categories c
+    on mc.idcategory = c.id;`
+    conn.query(sql, (err,results) => {
+        if(err) throw err;
+        res.send(results);
+    })
+
+})
 app.post('/addconnection', (req,res) => {
     var newConnection = {
         namaMovie: req.body.nama, 
@@ -149,8 +172,8 @@ app.delete('/deleteconnection/:nama', (req,res)=> {
         join movcat mc
         on m.id = mc.idmovie
         join categories c
-        on mc.idcategory = c.id`
-        sql = `DELETE from movcat where nama = '${nama};`
+        on mc.idcategory = c.id
+        where nama = '${nama};`
         conn.query(sql, (err,results) => {
         if(err) throw err
         res.send(results);
